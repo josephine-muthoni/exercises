@@ -1,3 +1,6 @@
+// ========== APP VERSION ==========
+const APP_VERSION = '2.0.2';
+
 // ========== APP STATE ==========
 const HABITS = [
   { id: "exercise", label: "🏋️ Exercise (30min+)", emoji: "🏋️" },
@@ -45,46 +48,121 @@ let currentSummaryEmoji = "🙂";
 let moodButtons = [];
 let summaryButtons = [];
 
-// Helper: show status message
+// ========== DARK MODE ==========
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDark = savedTheme === 'dark' || (savedTheme === null && prefersDark);
+  if (isDark) {
+    document.body.classList.add('dark');
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) themeBtn.innerHTML = '☀️ Light Mode';
+  } else {
+    document.body.classList.remove('dark');
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) themeBtn.innerHTML = '🌙 Dark Mode';
+  }
+}
+
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  const themeBtn = document.getElementById('themeToggle');
+  if (themeBtn) themeBtn.innerHTML = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+  showStatus(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled', false);
+}
+
+// ========== SERVICE WORKER & AUTO-UPDATE ==========
+let newWorker = null;
+let updateNotification = document.getElementById('updateNotification');
+
+function showUpdateNotification() {
+  if (updateNotification) {
+    updateNotification.style.display = 'block';
+    updateNotification.onclick = () => {
+      if (newWorker) {
+        newWorker.postMessage({ action: 'skipWaiting' });
+        showStatus('🔄 Updating app...', false);
+      } else {
+        window.location.reload();
+      }
+    };
+  }
+}
+
+function registerServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      console.log('✅ Service Worker registered');
+      
+      setInterval(() => reg.update(), 60000);
+      
+      reg.addEventListener('updatefound', () => {
+        newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateNotification();
+          }
+        });
+      });
+    }).catch(err => console.log('SW registration failed'));
+    
+    navigator.serviceWorker.addEventListener('message', event => {
+      if (event.data && event.data.action === 'reload') {
+        setTimeout(() => window.location.reload(), 500);
+      }
+    });
+  }
+}
+
+function manualUpdate() {
+  if ('serviceWorker' in navigator) {
+    showStatus('🔄 Checking for updates...', false);
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg) {
+        reg.update();
+        setTimeout(() => showStatus('✅ Check complete!', false), 1500);
+      } else {
+        showStatus('✅ Latest version', false);
+      }
+    });
+  }
+}
+
 function showStatus(msg, isError = false) {
   statusMsg.textContent = msg;
-  statusMsg.style.backgroundColor = isError ? "#ffe0db" : "#eef3e3";
-  statusMsg.style.color = isError ? "#b13e2d" : "#2c6e2f";
+  statusMsg.style.backgroundColor = isError ? "#ffe0db" : "var(--status-msg-bg)";
+  statusMsg.style.color = isError ? "#b13e2d" : "var(--status-msg-color)";
   setTimeout(() => {
     if (statusMsg.textContent === msg) {
-      statusMsg.style.backgroundColor = "#eef3e3";
-      statusMsg.style.color = "#5f7c4b";
+      statusMsg.style.backgroundColor = "var(--status-msg-bg)";
+      statusMsg.style.color = "var(--status-msg-color)";
       statusMsg.textContent = "✨ Ready";
     }
   }, 2200);
 }
 
-// localStorage functions
+// ========== LOCAL STORAGE ==========
 function getStorageKey(dateStr) { return `emojournal_${dateStr}`; }
-
 function loadEntryFromStorage(dateStr) {
   const raw = localStorage.getItem(getStorageKey(dateStr));
   return raw ? JSON.parse(raw) : null;
 }
-
 function saveEntryToStorage(dateStr, entry) {
   localStorage.setItem(getStorageKey(dateStr), JSON.stringify(entry));
 }
-
 function deleteEntryFromStorage(dateStr) {
   localStorage.removeItem(getStorageKey(dateStr));
 }
-
 function getAllEntryDates() {
   return Object.keys(localStorage)
     .filter(key => key.startsWith("emojournal_"))
     .map(key => key.replace("emojournal_", ""))
     .filter(date => /^\d{4}-\d{2}-\d{2}$/.test(date))
-    .sort()
-    .reverse();
+    .sort().reverse();
 }
 
-// Habit UI functions
+// ========== HABIT UI ==========
 function buildHabitCheckboxes() {
   habitContainer.innerHTML = "";
   HABITS.forEach(habit => {
@@ -119,7 +197,7 @@ function setHabitsFromState(habitsObj) {
   });
 }
 
-// Mood UI functions
+// ========== MOOD UI ==========
 function buildMoodUI() {
   moodOptionsDiv.innerHTML = "";
   moodButtons = [];
@@ -142,7 +220,7 @@ function setActiveMood(emoji) {
   });
 }
 
-// Summary Emoji UI functions
+// ========== SUMMARY UI ==========
 function buildSummaryUI() {
   summaryOptionsDiv.innerHTML = "";
   summaryButtons = [];
@@ -165,7 +243,7 @@ function setActiveSummary(emoji) {
   });
 }
 
-// Load entry into UI
+// ========== LOAD/SAVE ==========
 function loadEntryToUI(dateStr) {
   const entry = loadEntryFromStorage(dateStr);
   if (entry) {
@@ -194,7 +272,7 @@ function buildCurrentEntryObject() {
 function saveCurrentEntry() {
   const entry = buildCurrentEntryObject();
   saveEntryToStorage(currentDate, entry);
-  showStatus(`✅ Saved ${currentDate} with summary ${currentSummaryEmoji}`);
+  showStatus(`✅ Saved ${currentDate}`);
   refreshRecentEntriesList();
 }
 
@@ -208,11 +286,11 @@ function resetCurrentDateEntry() {
   refreshRecentEntriesList();
 }
 
-// Refresh recent entries list
+// ========== RECENT ENTRIES ==========
 function refreshRecentEntriesList() {
   const allDates = getAllEntryDates();
   if (allDates.length === 0) {
-    recentDiv.innerHTML = `<div style="color: #ad8e6e; text-align: center;">✨ No entries yet — start journaling!</div>`;
+    recentDiv.innerHTML = `<div style="color: var(--text-light); text-align: center;">✨ No entries yet — start journaling!</div>`;
     return;
   }
   recentDiv.innerHTML = "";
@@ -228,9 +306,9 @@ function refreshRecentEntriesList() {
     const diaryPreview = entry.diaryText ? (entry.diaryText.length > 20 ? entry.diaryText.slice(0,20)+"…" : entry.diaryText) : "—";
     infoDiv.innerHTML = `
       <span class="recent-date">${date}</span>
-      <span class="recent-summary" title="day summary">${summaryEmoji}</span>
-      <span class="recent-mood" title="mood">${moodEmoji}</span>
-      <span style="font-size:0.7rem; color:#9b7b5c;">📝 ${diaryPreview}</span>
+      <span class="recent-summary">${summaryEmoji}</span>
+      <span class="recent-mood">${moodEmoji}</span>
+      <span style="font-size:0.7rem;">📝 ${diaryPreview}</span>
     `;
     const actionsDiv = document.createElement('div');
     const loadBtn = document.createElement('button');
@@ -241,7 +319,7 @@ function refreshRecentEntriesList() {
       currentDate = date;
       datePicker.value = currentDate;
       loadEntryToUI(currentDate);
-      showStatus(`Loaded ${date} · summary: ${summaryEmoji}`);
+      showStatus(`Loaded ${date}`);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
     const delBtn = document.createElement('button');
@@ -253,7 +331,6 @@ function refreshRecentEntriesList() {
         deleteEntryFromStorage(date);
         if (currentDate === date) resetCurrentDateEntry();
         refreshRecentEntriesList();
-        showStatus(`Deleted ${date}`, false);
         if (currentDate === date) loadEntryToUI(currentDate);
       }
     });
@@ -263,17 +340,9 @@ function refreshRecentEntriesList() {
     card.appendChild(actionsDiv);
     recentDiv.appendChild(card);
   }
-  if (allDates.length > 12) {
-    const more = document.createElement('div');
-    more.style.textAlign = "center";
-    more.style.fontSize = "0.7rem";
-    more.style.color = "#a98c6d";
-    more.innerText = `+ ${allDates.length - 12} more days (keep journaling)`;
-    recentDiv.appendChild(more);
-  }
 }
 
-// Date navigation
+// ========== DATE NAVIGATION ==========
 function setCurrentDate(newDateStr) {
   currentDate = newDateStr;
   datePicker.value = currentDate;
@@ -287,31 +356,7 @@ function changeDateBy(delta) {
   setCurrentDate(dateObj.toISOString().slice(0,10));
 }
 
-// PWA Install prompt
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  const installPrompt = document.getElementById('installPrompt');
-  if (installPrompt) installPrompt.style.display = 'block';
-});
-
-document.getElementById('installBtn')?.addEventListener('click', async () => {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      document.getElementById('installPrompt').style.display = 'none';
-    }
-    deferredPrompt = null;
-  }
-});
-
-document.getElementById('closeInstallBtn')?.addEventListener('click', () => {
-  document.getElementById('installPrompt').style.display = 'none';
-});
-
-// Offline detection
+// ========== OFFLINE DETECTION ==========
 window.addEventListener('load', () => {
   if (!navigator.onLine) {
     document.getElementById('offlineIndicator').style.display = 'block';
@@ -324,8 +369,19 @@ window.addEventListener('offline', () => {
   document.getElementById('offlineIndicator').style.display = 'block';
 });
 
-// Initialize app
+// ========== VERSION BADGE ==========
+function addVersionBadge() {
+  const badge = document.createElement('div');
+  badge.className = 'version-badge';
+  badge.innerHTML = `v${APP_VERSION}`;
+  badge.title = 'Tap to check for updates';
+  badge.onclick = () => manualUpdate();
+  document.body.appendChild(badge);
+}
+
+// ========== INITIALIZE ==========
 function init() {
+  initTheme();
   buildHabitCheckboxes();
   buildMoodUI();
   buildSummaryUI();
@@ -334,16 +390,21 @@ function init() {
   datePicker.value = currentDate;
   loadEntryToUI(currentDate);
   refreshRecentEntriesList();
+  registerServiceWorker();
+  addVersionBadge();
 
+  document.getElementById('themeToggle')?.addEventListener('click', toggleTheme);
+  document.getElementById('updateBtn')?.addEventListener('click', manualUpdate);
   prevBtn.addEventListener('click', () => changeDateBy(-1));
   nextBtn.addEventListener('click', () => changeDateBy(1));
   todayBtn.addEventListener('click', () => setCurrentDate(new Date().toISOString().slice(0,10)));
   datePicker.addEventListener('change', (e) => setCurrentDate(e.target.value));
   saveBtn.addEventListener('click', () => { saveCurrentEntry(); refreshRecentEntriesList(); });
   clearBtn.addEventListener('click', () => {
-    if (confirm(`Reset all data for ${currentDate}? This will delete the entry.`)) resetCurrentDateEntry();
+    if (confirm(`Reset all data for ${currentDate}?`)) resetCurrentDateEntry();
   });
-  showStatus("📔 Ready! Pick mood, habits, diary & summary emoji", false);
+  
+  showStatus(`📔 Ready!`, false);
 }
 
 init();

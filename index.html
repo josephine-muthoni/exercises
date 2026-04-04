@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#7b5a3b">
+  <meta name="theme-color" content="#7b5a3b" id="themeColorMeta">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Emoji Journal">
@@ -13,78 +14,143 @@
   <title>Emoji Journal · Mood + Habits + Diary</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-<div class="app-container">
-  <div class="app-header">
-    <h1>📔 Emoji Diary ✨</h1>
-    <p>mood · habits · mini diary — one emoji to summarize your day</p>
-  </div>
-
-  <!-- offline indicator -->
-  <div id="offlineIndicator" style="display:none; background:#ff9800; color:white; text-align:center; padding:8px; border-radius:20px; margin-bottom:10px;">
-    ⚡ You're offline — your entries will save locally
-  </div>
-
-  <!-- date navigation panel -->
-  <div class="date-bar">
-    <div class="date-nav">
-      <button id="prevDayBtn" aria-label="previous day">◀</button>
-      <input type="date" id="datePicker">
-      <button id="nextDayBtn" aria-label="next day">▶</button>
+  <div class="app-container">
+    <div class="app-header">
+      <h1>📔 Emoji Diary ✨</h1>
+      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
+        <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
+        <button id="updateBtn" class="update-btn">🔄 Check Update</button>
+      </div>
+      <p>mood · habits · mini diary — one emoji to summarize your day</p>
     </div>
-    <button id="todayBtn" class="today-btn">📅 Today</button>
-  </div>
 
-  <!-- mood tracker card -->
-  <div class="card">
-    <div class="card-title">😊 Mood tracker</div>
-    <div class="emoji-grid" id="moodOptions"></div>
-  </div>
-
-  <!-- habit tracker card -->
-  <div class="card">
-    <div class="card-title">✅ Habit tracker</div>
-    <div id="habitContainer" class="habit-list"></div>
-  </div>
-
-  <!-- mini diary card -->
-  <div class="card">
-    <div class="card-title">📝 Mini diary</div>
-    <textarea id="diaryText" rows="3" class="diary-area" placeholder="Write something about your day... 🌟"></textarea>
-  </div>
-
-  <!-- summary emoji picker -->
-  <div class="card">
-    <div class="card-title">🏷️ Emoji summary of the whole day</div>
-    <div class="emoji-grid" id="summaryOptions"></div>
-    <p style="font-size: 0.75rem; margin-top: 10px; color: #876a48;">✨ Pick an emoji that perfectly wraps up your day</p>
-  </div>
-
-  <!-- save & actions -->
-  <div class="save-section">
-    <button id="saveEntryBtn" class="save-btn">💾 Save entry</button>
-    <button id="clearCurrentBtn" class="clear-date">🗑️ Reset today</button>
-    <div id="statusMsg" class="status-msg">✅ Ready</div>
-  </div>
-
-  <!-- recent entries with summary emoji preview -->
-  <div class="card">
-    <div class="card-title">📆 Recent days (emoji summary)</div>
-    <div id="recentEntriesList" class="recent-list">
-      <div style="color: #ad8e6e; text-align: center;">✨ your past entries will appear here</div>
+    <!-- OFFLINE READY BANNER - CLICK TO INSTALL -->
+    <div id="installBanner" style="display:none; cursor:pointer;" onclick="openAppStore()">
+      <div
+        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; text-align:center; padding:18px; border-radius:20px; margin-bottom:15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+        <div style="display:flex; align-items:center; justify-content:center; gap:15px; flex-wrap:wrap;">
+          <span style="font-size:2.5rem;">📱</span>
+          <div>
+            <strong style="font-size:1.2rem;">Get the App</strong><br>
+            <span style="font-size:0.9rem;">Tap to install on your device →</span>
+          </div>
+          <span style="font-size:2rem;">👇</span>
+        </div>
+      </div>
     </div>
-  </div>
-  
-  <!-- install prompt for PWA -->
-  <div id="installPrompt" style="display:none;">
-    <p style="margin-bottom:10px;">📱 Install Emoji Journal on your device!</p>
-    <button id="installBtn">Install App</button>
-    <button id="closeInstallBtn">Not now</button>
-  </div>
-  
-  <footer>💡 Install this app on your home screen for the best experience!</footer>
-</div>
 
-<script src="js/script.js"></script>
+    <!-- offline indicator -->
+    <div id="offlineIndicator"
+      style="display:none; background:#ff9800; color:white; text-align:center; padding:8px; border-radius:20px; margin-bottom:10px;">
+      ⚡ You're offline — your entries save locally
+    </div>
+
+    <!-- update notification -->
+    <div id="updateNotification"
+      style="display:none; background:#4caf50; color:white; text-align:center; padding:12px; border-radius:20px; margin-bottom:10px; cursor:pointer; font-weight:bold;">
+      🔄 New version available! Click here to update now.
+    </div>
+
+    <!-- date navigation -->
+    <div class="date-bar">
+      <div class="date-nav">
+        <button id="prevDayBtn">◀</button>
+        <input type="date" id="datePicker">
+        <button id="nextDayBtn">▶</button>
+      </div>
+      <button id="todayBtn" class="today-btn">📅 Today</button>
+    </div>
+
+    <!-- mood tracker -->
+    <div class="card">
+      <div class="card-title">😊 Mood tracker</div>
+      <div class="emoji-grid" id="moodOptions"></div>
+    </div>
+
+    <!-- habit tracker -->
+    <div class="card">
+      <div class="card-title">✅ Habit tracker</div>
+      <div id="habitContainer" class="habit-list"></div>
+    </div>
+
+    <!-- mini diary -->
+    <div class="card">
+      <div class="card-title">📝 Mini diary</div>
+      <textarea id="diaryText" rows="3" class="diary-area"
+        placeholder="Write something about your day... 🌟"></textarea>
+    </div>
+
+    <!-- summary emoji -->
+    <div class="card">
+      <div class="card-title">🏷️ Emoji summary of the whole day</div>
+      <div class="emoji-grid" id="summaryOptions"></div>
+      <p style="font-size: 0.75rem; margin-top: 10px; color: var(--text-light);">✨ Pick an emoji that wraps up your day
+      </p>
+    </div>
+
+    <!-- save actions -->
+    <div class="save-section">
+      <button id="saveEntryBtn" class="save-btn">💾 Save entry</button>
+      <button id="clearCurrentBtn" class="clear-date">🗑️ Reset today</button>
+      <div id="statusMsg" class="status-msg">✅ Ready</div>
+    </div>
+
+    <!-- recent entries -->
+    <div class="card">
+      <div class="card-title">📆 Recent days</div>
+      <div id="recentEntriesList" class="recent-list">
+        <div style="color: var(--text-light); text-align: center;">✨ your past entries appear here</div>
+      </div>
+    </div>
+
+    <footer>✨ Works offline - all data saved on your device</footer>
+  </div>
+
+  <script src="js/script.js"></script>
+  <script>
+    // CHANGE THESE TO YOUR REAL STORE URLS
+    const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=YOUR_PACKAGE_NAME';
+    const APP_STORE_URL = 'https://apps.apple.com/app/YOUR_APP_NAME/idYOUR_APP_ID';
+    // Detect device and open correct store
+    function openAppStore() {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+      // Check for Android
+      if (/android/i.test(userAgent)) {
+        window.location.href = PLAY_STORE_URL;
+      }
+      // Check for iOS
+      else if (/iPad|iPhone|iPod/.test(userAgent)) {
+        window.location.href = APP_STORE_URL;
+      }
+      // For desktop - show PWA install guide
+      else {
+        alert('📱 On mobile: Tap Share → Add to Home Screen\n\nOn Android/iPhone, this will open the app store!');
+      }
+    }
+
+    // Show install banner after page loads (only on mobile)
+    setTimeout(() => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isMobile = /android|iPad|iPhone|iPod/i.test(userAgent);
+
+      if (isMobile) {
+        const installBanner = document.getElementById('installBanner');
+        if (installBanner && !localStorage.getItem('bannerClosed')) {
+          installBanner.style.display = 'block';
+
+          // Auto hide after 8 seconds
+          setTimeout(() => {
+            if (installBanner.style.display === 'block') {
+              installBanner.style.display = 'none';
+            }
+          }, 8000);
+        }
+      }
+    }, 1500);
+  </script>
 </body>
+
 </html>
