@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#7b5a3b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Emoji Journal">
+  <meta name="description" content="Track your mood, habits, and daily life with emojis">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+  <title>Emoji Journal · Mood + Habits + Diary</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-container">
+  <div class="app-header">
+    <h1>📔 Emoji Diary ✨</h1>
+    <p>mood · habits · mini diary — one emoji to summarize your day</p>
+  </div>
+
+  <!-- offline indicator -->
+  <div id="offlineIndicator" style="display:none; background:#ff9800; color:white; text-align:center; padding:8px; border-radius:20px; margin-bottom:10px;">
+    ⚡ You're offline — your entries will save locally
+  </div>
+
+  <!-- date navigation panel -->
+  <div class="date-bar">
+    <div class="date-nav">
+      <button id="prevDayBtn" aria-label="previous day">◀</button>
+      <input type="date" id="datePicker">
+      <button id="nextDayBtn" aria-label="next day">▶</button>
+    </div>
+    <button id="todayBtn" class="today-btn">📅 Today</button>
+  </div>
+
+  <!-- mood tracker card -->
+  <div class="card">
+    <div class="card-title">😊 Mood tracker</div>
+    <div class="emoji-grid" id="moodOptions"></div>
+  </div>
+
+  <!-- habit tracker card -->
+  <div class="card">
+    <div class="card-title">✅ Habit tracker</div>
+    <div id="habitContainer" class="habit-list"></div>
+  </div>
+
+  <!-- mini diary card -->
+  <div class="card">
+    <div class="card-title">📝 Mini diary</div>
+    <textarea id="diaryText" rows="3" class="diary-area" placeholder="Write something about your day... 🌟"></textarea>
+  </div>
+
+  <!-- summary emoji picker -->
+  <div class="card">
+    <div class="card-title">🏷️ Emoji summary of the whole day</div>
+    <div class="emoji-grid" id="summaryOptions"></div>
+    <p style="font-size: 0.75rem; margin-top: 10px; color: #876a48;">✨ Pick an emoji that perfectly wraps up your day</p>
+  </div>
+
+  <!-- save & actions -->
+  <div class="save-section">
+    <button id="saveEntryBtn" class="save-btn">💾 Save entry</button>
+    <button id="clearCurrentBtn" class="clear-date">🗑️ Reset today</button>
+    <div id="statusMsg" class="status-msg">✅ Ready</div>
+  </div>
+
+  <!-- recent entries with summary emoji preview -->
+  <div class="card">
+    <div class="card-title">📆 Recent days (emoji summary)</div>
+    <div id="recentEntriesList" class="recent-list">
+      <div style="color: #ad8e6e; text-align: center;">✨ your past entries will appear here</div>
+    </div>
+  </div>
+  
+  <!-- install prompt for PWA -->
+  <div id="installPrompt" style="display:none;">
+    <p style="margin-bottom:10px;">📱 Install Emoji Journal on your device!</p>
+    <button id="installBtn">Install App</button>
+    <button id="closeInstallBtn">Not now</button>
+  </div>
+  
+  <footer>💡 Install this app on your home screen for the best experience!</footer>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+}
+
+body {
+  background: linear-gradient(145deg, #f9f5f0 0%, #f0ebe5 100%);
+  padding: 1.5rem 1rem 3rem;
+  min-height: 100vh;
+}
+
+.app-container {
+  max-width: 750px;
+  margin: 0 auto;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  background: linear-gradient(135deg, #3b2a1f, #7b5a3b);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  letter-spacing: -0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-header p {
+  color: #5e4b34;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+.card {
+  background: rgba(255, 255, 245, 0.95);
+  backdrop-filter: blur(2px);
+  border-radius: 2rem;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
+  border: 1px solid #fff4e6;
+}
+
+.card-title {
+  font-weight: 600;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1rem;
+  color: #2c3e2f;
+  border-left: 4px solid #f4b942;
+  padding-left: 12px;
+}
+
+.date-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff9f0;
+  border-radius: 60px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.date-nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.date-nav button, .today-btn {
+  background: #f0e1cf;
+  border: none;
+  font-size: 1.2rem;
+  width: 38px;
+  height: 38px;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: bold;
+  color: #4e3b28;
+}
+
+.today-btn {
+  width: auto;
+  padding: 0 16px;
+  font-size: 0.9rem;
+  background: #e6d5c0;
+}
+
+.date-nav button:hover, .today-btn:hover {
+  background: #dcccaa;
+  transform: scale(0.96);
+}
+
+#datePicker {
+  background: #fff5e8;
+  border: 1px solid #e2cfb5;
+  padding: 8px 12px;
+  border-radius: 40px;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.emoji-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.mood-btn, .summary-btn {
+  background: #faf3ea;
+  border: 1px solid #eedbc8;
+  font-size: 1.8rem;
+  padding: 8px 12px;
+  border-radius: 60px;
+  cursor: pointer;
+  transition: 0.1s linear;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.mood-btn span, .summary-btn span {
+  font-size: 0.9rem;
+  color: #5c432e;
+}
+
+.mood-btn.active, .summary-btn.active {
+  background: #ffecb3;
+  border: 2px solid #f5b642;
+  box-shadow: 0 2px 8px rgba(245, 182, 66, 0.3);
+  transform: scale(0.98);
+}
+
+.habit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.habit-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fffaf2;
+  padding: 8px 12px;
+  border-radius: 60px;
+  border: 1px solid #f2e2d0;
+}
+
+.habit-item label {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #3a2c1c;
+  cursor: pointer;
+  flex: 1;
+}
+
+.habit-check {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  accent-color: #f4b942;
+  transform: scale(1.1);
+}
+
+.diary-area {
+  width: 100%;
+  padding: 14px;
+  border-radius: 28px;
+  border: 1px solid #eedbc8;
+  background: #fffef7;
+  font-size: 1rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.save-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin: 5px 0 10px;
+}
+
+.save-btn {
+  background: #7b5a3b;
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 60px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.save-btn:hover {
+  background: #5f3e28;
+  transform: scale(0.97);
+}
+
+.status-msg {
+  font-size: 0.85rem;
+  color: #5f7c4b;
+  background: #eef3e3;
+  padding: 6px 14px;
+  border-radius: 30px;
+}
+
+.clear-date {
+  background: #e2cfb5;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 40px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #4b3a28;
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.recent-card {
+  background: #fff7ef;
+  border-radius: 60px;
+  padding: 8px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  border: 1px solid #eedbc8;
+}
+
+.recent-info {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.recent-date {
+  font-weight: 600;
+  font-family: monospace;
+  background: #f3e7da;
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 0.8rem;
+}
+
+.recent-summary {
+  font-size: 1.4rem;
+}
+
+.recent-mood {
+  font-size: 1.2rem;
+}
+
+.load-recent {
+  background: none;
+  border: 1px solid #d6c09f;
+  padding: 5px 16px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.del-recent {
+  background: #ffe0d0;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  color: #a34e2e;
+}
+
+footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #8e755a;
+  margin-top: 2rem;
+}
+
+#installPrompt {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: #7b5a3b;
+  color: white;
+  padding: 15px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+#installBtn {
+  background: #ffd966;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-weight: bold;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+#closeInstallBtn {
+  background: transparent;
+  border: 1px solid white;
+  padding: 10px 20px;
+  border-radius: 30px;
+  color: white;
+  cursor: pointer;
+}
+
+@media (max-width: 550px) {
+  .card {
+    padding: 1rem;
+  }
+  .mood-btn, .summary-btn {
+    font-size: 1.4rem;
+    padding: 5px 10px;
+  }
+}
