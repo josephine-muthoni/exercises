@@ -1,156 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#7b5a3b" id="themeColorMeta">
+  <meta name="theme-color" content="#7b5a3b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Emoji Journal">
   <meta name="description" content="Track your mood, habits, and daily life with emojis">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-  <title>Emoji Journal · Mood + Habits + Diary</title>
   <link rel="stylesheet" href="css/style.css">
+  <title>Emoji Journal · Mood + Habits + Diary</title>
 </head>
-
 <body>
-  <div class="app-container">
-    <div class="app-header">
-      <h1>📔 Emoji Diary ✨</h1>
-      <div style="display: flex; gap: 12px; justify-content: center; margin-top: 10px; flex-wrap: wrap;">
-        <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
-        <button id="updateBtn" class="update-btn">🔄 Check Update</button>
-      </div>
-      <p>mood · habits · mini diary — one emoji to summarize your day</p>
+<div class="container">
+  <div class="header">
+    <h1>📔 Emoji Diary</h1>
+    <div>
+      <button class="theme-btn" id="themeToggle">🌙 Dark Mode</button>
+      <button class="update-btn" id="updateBtn">🔄 Update</button>
     </div>
-
-    <!-- OFFLINE READY BANNER - CLICK TO INSTALL -->
-    <div id="installBanner" style="display:none; cursor:pointer;" onclick="openAppStore()">
-      <div
-        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:white; text-align:center; padding:18px; border-radius:20px; margin-bottom:15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-        <div style="display:flex; align-items:center; justify-content:center; gap:15px; flex-wrap:wrap;">
-          <span style="font-size:2.5rem;">📱</span>
-          <div>
-            <strong style="font-size:1.2rem;">Get the App</strong><br>
-            <span style="font-size:0.9rem;">Tap to install on your device →</span>
-          </div>
-          <span style="font-size:2rem;">👇</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- offline indicator -->
-    <div id="offlineIndicator"
-      style="display:none; background:#ff9800; color:white; text-align:center; padding:8px; border-radius:20px; margin-bottom:10px;">
-      ⚡ You're offline — your entries save locally
-    </div>
-
-    <!-- update notification -->
-    <div id="updateNotification"
-      style="display:none; background:#4caf50; color:white; text-align:center; padding:12px; border-radius:20px; margin-bottom:10px; cursor:pointer; font-weight:bold;">
-      🔄 New version available! Click here to update now.
-    </div>
-
-    <!-- date navigation -->
-    <div class="date-bar">
-      <div class="date-nav">
-        <button id="prevDayBtn">◀</button>
-        <input type="date" id="datePicker">
-        <button id="nextDayBtn">▶</button>
-      </div>
-      <button id="todayBtn" class="today-btn">📅 Today</button>
-    </div>
-
-    <!-- mood tracker -->
-    <div class="card">
-      <div class="card-title">😊 Mood tracker</div>
-      <div class="emoji-grid" id="moodOptions"></div>
-    </div>
-
-    <!-- habit tracker -->
-    <div class="card">
-      <div class="card-title">✅ Habit tracker</div>
-      <div id="habitContainer" class="habit-list"></div>
-    </div>
-
-    <!-- mini diary -->
-    <div class="card">
-      <div class="card-title">📝 Mini diary</div>
-      <textarea id="diaryText" rows="3" class="diary-area"
-        placeholder="Write something about your day... 🌟"></textarea>
-    </div>
-
-    <!-- summary emoji -->
-    <div class="card">
-      <div class="card-title">🏷️ Emoji summary of the whole day</div>
-      <div class="emoji-grid" id="summaryOptions"></div>
-      <p style="font-size: 0.75rem; margin-top: 10px; color: var(--text-light);">✨ Pick an emoji that wraps up your day
-      </p>
-    </div>
-
-    <!-- save actions -->
-    <div class="save-section">
-      <button id="saveEntryBtn" class="save-btn">💾 Save entry</button>
-      <button id="clearCurrentBtn" class="clear-date">🗑️ Reset today</button>
-      <div id="statusMsg" class="status-msg">✅ Ready</div>
-    </div>
-
-    <!-- recent entries -->
-    <div class="card">
-      <div class="card-title">📆 Recent days</div>
-      <div id="recentEntriesList" class="recent-list">
-        <div style="color: var(--text-light); text-align: center;">✨ your past entries appear here</div>
-      </div>
-    </div>
-
-    <footer>✨ Works offline - all data saved on your device</footer>
+    <p>mood · habits · diary — one emoji to summarize your day</p>
   </div>
 
-  <script src="js/script.js"></script>
-  <script>
-    // CHANGE THESE TO YOUR REAL STORE URLS
-    const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=YOUR_PACKAGE_NAME';
-    const APP_STORE_URL = 'https://apps.apple.com/app/YOUR_APP_NAME/idYOUR_APP_ID';
-    // Detect device and open correct store
-    function openAppStore() {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  <!-- Streak Counter -->
+  <div class="streak-card">
+    <div class="streak-stats">
+      <div class="streak-stat">
+        <div class="streak-number" id="currentStreak">0</div>
+        <div class="streak-label">Current Streak 🔥</div>
+      </div>
+      <div class="streak-stat">
+        <div class="streak-number" id="bestStreak">0</div>
+        <div class="streak-label">Best Streak 🏆</div>
+      </div>
+      <div class="streak-stat">
+        <div class="streak-number" id="totalEntries">0</div>
+        <div class="streak-label">Total Entries 📝</div>
+      </div>
+    </div>
+    <div class="streak-days" id="streakDays"></div>
+  </div>
 
-      // Check for Android
-      if (/android/i.test(userAgent)) {
-        window.location.href = PLAY_STORE_URL;
-      }
-      // Check for iOS
-      else if (/iPad|iPhone|iPod/.test(userAgent)) {
-        window.location.href = APP_STORE_URL;
-      }
-      // For desktop - show PWA install guide
-      else {
-        alert('📱 On mobile: Tap Share → Add to Home Screen\n\nOn Android/iPhone, this will open the app store!');
-      }
-    }
+  <!-- Date Navigation -->
+  <div class="date-bar">
+    <div class="date-nav">
+      <button id="prevDay">◀</button>
+      <input type="date" id="datePicker">
+      <button id="nextDay">▶</button>
+    </div>
+    <button class="today-btn" id="todayBtn">📅 Today</button>
+  </div>
 
-    // Show install banner after page loads (only on mobile)
-    setTimeout(() => {
-      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-      const isMobile = /android|iPad|iPhone|iPod/i.test(userAgent);
+  <!-- Mood Tracker - ONLY 5 DEFAULT MOODS -->
+  <div class="card">
+    <div class="card-title">😊 Mood Tracker</div>
+    <div class="emoji-grid" id="moodGrid"></div>
+    
+    <!-- Custom Mood Addition with Emoji Picker -->
+    <div class="custom-section">
+      <input type="text" id="newMoodName" placeholder="New mood name (e.g., Sleepy, Frustrated)" style="flex:2;">
+      <div class="emoji-picker-container">
+        <button id="emojiPickerBtn" class="emoji-picker-btn">😊 ▼</button>
+        <div id="emojiPickerDropdown" class="emoji-picker-dropdown" style="display:none;">
+          <div class="emoji-grid-small">
+            <span class="emoji-option">😊</span>
+            <span class="emoji-option">😢</span>
+            <span class="emoji-option">😠</span>
+            <span class="emoji-option">😰</span>
+            <span class="emoji-option">😌</span>
+            <span class="emoji-option">😴</span>
+            <span class="emoji-option">😤</span>
+            <span class="emoji-option">🥱</span>
+            <span class="emoji-option">🤩</span>
+            <span class="emoji-option">😞</span>
+            <span class="emoji-option">🥰</span>
+            <span class="emoji-option">💪</span>
+            <span class="emoji-option">🎉</span>
+            <span class="emoji-option">🌟</span>
+            <span class="emoji-option">🔥</span>
+            <span class="emoji-option">💕</span>
+            <span class="emoji-option">😎</span>
+            <span class="emoji-option">🤔</span>
+            <span class="emoji-option">😱</span>
+            <span class="emoji-option">🥳</span>
+            <span class="emoji-option">😇</span>
+            <span class="emoji-option">🤗</span>
+            <span class="emoji-option">😍</span>
+          </div>
+        </div>
+      </div>
+      <button class="small-btn" id="addMoodBtn">+ Add Custom Mood</button>
+    </div>
+    <small style="display:block; margin-top:10px; color:var(--text-light);">✨ ONLY 5 default moods: Happy, Sad, Angry, Anxious, Calm — Add any other mood you want!</small>
+  </div>
 
-      if (isMobile) {
-        const installBanner = document.getElementById('installBanner');
-        if (installBanner && !localStorage.getItem('bannerClosed')) {
-          installBanner.style.display = 'block';
+  <!-- Habit Tracker with Emoji Picker -->
+  <div class="card">
+    <div class="card-title">✅ Habit Tracker</div>
+    <div id="habitList" class="habit-list"></div>
+    <div class="custom-section">
+      <input type="text" id="newHabitName" placeholder="New habit name (e.g., Walk, Meditate)" style="flex:2;">
+      <div class="emoji-picker-container">
+        <button id="habitEmojiPickerBtn" class="emoji-picker-btn">🏃 ▼</button>
+        <div id="habitEmojiPickerDropdown" class="emoji-picker-dropdown" style="display:none;">
+          <div class="emoji-grid-small">
+            <span class="habit-emoji-option">🏃</span>
+            <span class="habit-emoji-option">📖</span>
+            <span class="habit-emoji-option">🧘</span>
+            <span class="habit-emoji-option">💧</span>
+            <span class="habit-emoji-option">🏋️</span>
+            <span class="habit-emoji-option">🚶</span>
+            <span class="habit-emoji-option">🧠</span>
+            <span class="habit-emoji-option">🥗</span>
+            <span class="habit-emoji-option">💤</span>
+            <span class="habit-emoji-option">🎯</span>
+            <span class="habit-emoji-option">✍️</span>
+            <span class="habit-emoji-option">🎨</span>
+            <span class="habit-emoji-option">🎵</span>
+            <span class="habit-emoji-option">🧹</span>
+            <span class="habit-emoji-option">💼</span>
+            <span class="habit-emoji-option">📱</span>
+            <span class="habit-emoji-option">🚴</span>
+            <span class="habit-emoji-option">🏊</span>
+            <span class="habit-emoji-option">🧘‍♀️</span>
+            <span class="habit-emoji-option">🍎</span>
+            <span class="habit-emoji-option">☕</span>
+            <span class="habit-emoji-option">🧴</span>
+            <span class="habit-emoji-option">🧦</span>
+            <span class="habit-emoji-option">📝</span>
+          </div>
+        </div>
+      </div>
+      <button class="small-btn" id="addHabitBtn">+ Add Habit</button>
+    </div>
+    <small style="display:block; margin-top:10px; color:var(--text-light);">✨ Click the emoji button to choose from 20+ habit emojis!</small>
+  </div>
 
-          // Auto hide after 8 seconds
-          setTimeout(() => {
-            if (installBanner.style.display === 'block') {
-              installBanner.style.display = 'none';
-            }
-          }, 8000);
-        }
-      }
-    }, 1500);
-  </script>
+  <!-- Mini Diary -->
+  <div class="card">
+    <div class="card-title">📝 Mini Diary</div>
+    <textarea id="diaryText" rows="3" class="diary-area" placeholder="Write about your day..."></textarea>
+  </div>
+
+  <!-- Summary Emoji -->
+  <div class="card">
+    <div class="card-title">🏷️ Day Summary Emoji</div>
+    <div class="emoji-grid" id="summaryGrid"></div>
+    <div class="custom-section">
+      <input type="text" id="newSummaryName" placeholder="New summary (e.g., Epic)">
+      <input type="text" id="newSummaryEmoji" placeholder="Emoji 🌟" maxlength="2" style="width: 70px;">
+      <button class="small-btn" id="addSummaryBtn">+ Add Summary</button>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="save-section">
+    <button class="save-btn" id="saveBtn">💾 Save Entry</button>
+    <button class="clear-date" id="clearBtn">🗑️ Reset Today</button>
+    <div class="status-msg" id="statusMsg">✅ Ready</div>
+  </div>
+
+  <!-- Recent Entries -->
+  <div class="card">
+    <div class="card-title">📆 Recent Entries</div>
+    <div id="recentList" class="recent-list">
+      <div style="text-align: center; color: var(--text-light);">✨ No entries yet</div>
+    </div>
+  </div>
+</div>
+
+<script src="js/script.js"></script>
 </body>
-
 </html>
